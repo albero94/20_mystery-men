@@ -1,4 +1,7 @@
 # Project work distribution & timeline
+Sam Frey (github: samfrey99)
+
+Alvaro Albero (github: albero94)
 
 ## Brief project description
 Our project consists on creating a smart door system that uses face recognition to determine if the door lock should open or not. 
