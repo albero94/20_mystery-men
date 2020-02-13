@@ -81,3 +81,11 @@ The first tasks would consist on acquiring the components and services and under
 * Connect the whole system and start making the first tests
 * Make the necessary changes to improve the collection of images, transmission, face recognition and lock operation
 * Try to extend the system by providing a way to add new images through a mobile application and also be able to operate the lock directly from the application, e.g. to open the door to a friend
+
+## Required Materials
+* Raspberry Pi and camera module (already aquired)
+* Azure subscription (if a free trial isn't enough for the scope of this project)
+* [Adafruit Rotating Door Lock DC Motor](https://www.adafruit.com/product/3881)
+* [Lens Adjustment Tool for Raspberry Pi Camera](https://www.adafruit.com/product/3518)
+* A Door Lock (deadbolt)
+* An Actual Door (tenative for demo)
