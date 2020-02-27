@@ -49,11 +49,10 @@ namespace FaceRecognitionServer
             {
                 endpoints.MapControllers();
             });
-
         }
 
 
 
-        
+
     }
 }

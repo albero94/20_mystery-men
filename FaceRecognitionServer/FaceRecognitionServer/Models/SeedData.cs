@@ -11,16 +11,17 @@ namespace FaceRecognitionServer.Models
     {
         public static void Initialize(IServiceProvider serviceProvider)
         {
+
             using (var context = new FaceImageContext(
                 serviceProvider.GetRequiredService<DbContextOptions<FaceImageContext>>()))
             {
                 if (context.FaceImages.Any()) return;
 
                 context.FaceImages.Add(
-                new FaceImage { Id = 1, Name = "image1", Path = $"{Environment.CurrentDirectory}\\..\\..\\..\\Images\\image1.jpg" }
+                new FaceImage { Id = 1, Name = "image1", Path = $"{Environment.CurrentDirectory}\\..\\Images\\image1.jpg" }
                 );
                 context.FaceImages.Add(
-                new FaceImage { Id = 2, Name = "image2", Path = $"{Environment.CurrentDirectory}\\..\\..\\..\\Images\\image2.jpg" }
+                new FaceImage { Id = 2, Name = "image2", Path = $"{Environment.CurrentDirectory}\\..\\Images\\image2.jpg" }
                 );
 
                 context.SaveChanges();

@@ -1,0 +1,8 @@
+Cognitive services api endpoint
+https://westus.dev.cognitive.microsoft.com/docs/services/563879b61984550e40cbbe8d/operations/563879b61984550f30395236
+
+When I creae a person list, it stays there, only create the group once
+
+I need to finish pushing information for one person, 
+
+Then query it with the input image and see what happens
