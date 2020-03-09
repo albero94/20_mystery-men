@@ -86,7 +86,8 @@ namespace FaceRecognitionServer.Models
                 Console.WriteLine(message);
             }
 
-            return identifyResults.Contains;
+            // Todo: return if there is any match with more than X percentage
+            return true;
         }
 
         private static IFaceClient Authenticate(string endpoint, string key)
