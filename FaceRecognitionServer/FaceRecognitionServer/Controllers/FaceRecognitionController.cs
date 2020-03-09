@@ -8,6 +8,7 @@ using FaceRecognitionServer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Azure.CognitiveServices.Vision.Face;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using System.IO;
 
 namespace FaceRecognitionServer.Controllers
 {
@@ -24,26 +25,26 @@ namespace FaceRecognitionServer.Controllers
             _context = context;
         }
 
-        // GET: api/FaceImages
+        // GET: api/FaceRecognition
         [HttpGet]
-        public async Task<ActionResult<Boolean>> GetFaceValidation(FaceImage faceImage)
+        public async Task<ActionResult<Boolean>> GetSampleValidation()
         {
-            IFaceClient client = Authenticate(ENDPOINT, SUBSCRIPTION_KEY);
-
-            findFaceMatch(faceImage);
-
-
-            return await findFaceMatch(faceImage);
-        }
-
-        private async Task<bool> findFaceMatch(FaceImage faceImage)
-        {
-            throw new NotImplementedException();
+            FileStream image = System.IO.File.OpenRead($"{Environment.CurrentDirectory}/../Images/image4.jpg");
+            return await FaceRecognitionServer.Models.PersonGroup.GetFaceMatch(image);
         }
 
         private IFaceClient Authenticate(string endpoint, string key)
         {
             return new FaceClient(new ApiKeyServiceClientCredentials(key)) { Endpoint = endpoint };
+        }
+
+
+        // Post: api/FaceRecognition
+        [HttpPost]
+        //public async Task<ActionResult<Boolean>> Initialize(FaceImage faceImage)
+        public async void Initialize()
+        {
+                FaceRecognitionServer.Models.PersonGroup.Initialize(_context);
         }
     }
 }
