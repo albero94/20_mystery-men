@@ -60,23 +60,37 @@ namespace FaceRecognitionServer.Models
         public static async Task<bool> IsFaceMatch(Stream imageStream)
         {
             List<Guid> sourceFaceIds = new List<Guid>();
-            IList<DetectedFace> detectedFaces = await _client.Face.DetectWithStreamAsync(imageStream, recognitionModel: RECOGNITION_MODEL1);
-            foreach (var detectedFace in detectedFaces) { sourceFaceIds.Add(detectedFace.FaceId.Value); }
-
-            var identifyResults = await _client.Face.IdentifyAsync(sourceFaceIds, _personGroupId);
-
-            string message;
-            foreach (var result in identifyResults)
+            try
             {
-                Person person = await _client.PersonGroupPerson.GetAsync(_personGroupId, result.Candidates[0].PersonId);
-                message = $"Person {person.Name} is identified for face in image with Face ID {result.FaceId} " +
-                    $"and confidence {result.Candidates[0].Confidence}.";
-                Console.WriteLine(message);
-            }
+                IList<DetectedFace> detectedFaces = await _client.Face.DetectWithStreamAsync(imageStream, recognitionModel: RECOGNITION_MODEL1);
 
-            // Todo: return if there is any match with more than X percentage
-            return true;
+                foreach (var detectedFace in detectedFaces) { sourceFaceIds.Add(detectedFace.FaceId.Value); }
+
+                var result = (await _client.Face.IdentifyAsync(sourceFaceIds, _personGroupId))[0];
+
+                string message;
+                if (result.Candidates.Count > 0)
+                {
+                    foreach (var candidate in result.Candidates)
+                    {
+                        Person person = await _client.PersonGroupPerson.GetAsync(_personGroupId, candidate.PersonId);
+
+                        Console.WriteLine($"Person {person.Name} is identified for face in image with Face ID {result.FaceId} " +
+                            $"and confidence {result.Candidates[0].Confidence}.");
+                    }
+                }
+                else Console.WriteLine("No match was found");
+
+                return result.Candidates.Any(c => c.Confidence > 0.5);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
         }
+
+
 
         private static IFaceClient Authenticate(string endpoint, string key)
         {
