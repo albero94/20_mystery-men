@@ -57,20 +57,8 @@ namespace FaceRecognitionServer.Models
             }
         }
 
-        public static async Task<bool> GetFaceMatch(Stream imageStream)
+        public static async Task<bool> IsFaceMatch(Stream imageStream)
         {
-            // problems with Guid? Guid
-
-            IList<Person> people = await _client.PersonGroupPerson.ListAsync(_personGroupId);
-            IList<Guid?> persistedFaceIds = new List<Guid?>();
-            foreach (var person in people)
-            {
-                foreach (var face in person.PersistedFaceIds)
-                {
-                    persistedFaceIds.Add(face);
-                }
-            }
-
             List<Guid> sourceFaceIds = new List<Guid>();
             IList<DetectedFace> detectedFaces = await _client.Face.DetectWithStreamAsync(imageStream, recognitionModel: RECOGNITION_MODEL1);
             foreach (var detectedFace in detectedFaces) { sourceFaceIds.Add(detectedFace.FaceId.Value); }

@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using FaceRecognitionServer.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Azure.CognitiveServices.Vision.Face;
-using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using System.IO;
 
 namespace FaceRecognitionServer.Controllers
@@ -30,21 +28,15 @@ namespace FaceRecognitionServer.Controllers
         public async Task<ActionResult<Boolean>> GetSampleValidation()
         {
             FileStream image = System.IO.File.OpenRead($"{Environment.CurrentDirectory}/../Images/image4.jpg");
-            return await FaceRecognitionServer.Models.PersonGroup.GetFaceMatch(image);
+            return await PersonGroup.IsFaceMatch(image);
         }
-
-        private IFaceClient Authenticate(string endpoint, string key)
-        {
-            return new FaceClient(new ApiKeyServiceClientCredentials(key)) { Endpoint = endpoint };
-        }
-
 
         // Post: api/FaceRecognition
         [HttpPost]
         //public async Task<ActionResult<Boolean>> Initialize(FaceImage faceImage)
         public async void Initialize()
         {
-                FaceRecognitionServer.Models.PersonGroup.Initialize(_context);
+                PersonGroup.Initialize(_context);
         }
     }
 }
