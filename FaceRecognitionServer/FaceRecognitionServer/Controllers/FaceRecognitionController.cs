@@ -10,7 +10,7 @@ using System.IO;
 
 namespace FaceRecognitionServer.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/{controller}/{action=IsFaceMatch}")]
     [ApiController]
     public class FaceRecognitionController : ControllerBase
     {
@@ -23,12 +23,21 @@ namespace FaceRecognitionServer.Controllers
             _context = context;
         }
 
-        // GET: api/FaceRecognition
+        // GET: api/FaceRecognition/Sample
         [HttpGet]
-        public async Task<ActionResult<Boolean>> GetSampleValidation()
+        public async Task<ActionResult<Boolean>> Sample(string imageName = "")
         {
-            FileStream image = System.IO.File.OpenRead($"{Environment.CurrentDirectory}/../Images/image4.jpg");
+            if (imageName == "") return false;
+            FileStream image = System.IO.File.OpenRead($"{Environment.CurrentDirectory}/../Images/{imageName}.jpg");
             return await PersonGroup.IsFaceMatch(image);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Boolean>> IsFaceMatch([FromForm] IFormFile file)
+        {
+            Stream image = file.OpenReadStream();
+
+            if (true) return await PersonGroup.IsFaceMatch(image);
         }
 
         // Post: api/FaceRecognition
@@ -36,7 +45,7 @@ namespace FaceRecognitionServer.Controllers
         //public async Task<ActionResult<Boolean>> Initialize(FaceImage faceImage)
         public async void Initialize()
         {
-                PersonGroup.Initialize(_context);
+            PersonGroup.Initialize(_context);
         }
     }
 }
