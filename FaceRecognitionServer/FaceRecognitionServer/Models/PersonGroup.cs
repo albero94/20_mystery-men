@@ -29,10 +29,8 @@ namespace FaceRecognitionServer.Models
                 await _client.PersonGroup.CreateAsync(_personGroupId, "My Roomates");
 
                 // Define Bill Gates
-                MyPerson person = new MyPerson();
-                person.Name = "Bill";
-                var file1 = File.OpenRead($"{Environment.CurrentDirectory}\\..\\Images\\image1.jpg");
-                person.Images.Add(file1);
+                MyPerson person = new MyPerson("Bill", false);
+                person.Images.Add(File.OpenRead($"{Environment.CurrentDirectory}\\..\\Images\\image1.jpg"));
                 person.Images.Add(File.OpenRead($"{Environment.CurrentDirectory}\\..\\Images\\image3.jpg"));
 
                 await AddPersonToPersonGroup(person);
@@ -52,14 +50,16 @@ namespace FaceRecognitionServer.Models
             try
             {
 
-                var person = await _client.PersonGroupPerson.CreateAsync(_personGroupId, myPerson.Name);
+                var azurePerson = await _client.PersonGroupPerson.CreateAsync(_personGroupId, myPerson.Name);
 
+                myPerson.ReadFormFiles();
                 foreach (var image in myPerson.Images)
                 {
-                    await _client.PersonGroupPerson.AddFaceFromStreamAsync(_personGroupId, person.PersonId, image);
+                    await _client.PersonGroupPerson.AddFaceFromStreamAsync(_personGroupId, azurePerson.PersonId, image);
                 }
 
                 await _client.PersonGroup.TrainAsync(_personGroupId);
+                
                 while (true)
                 {
                     await Task.Delay(1000);

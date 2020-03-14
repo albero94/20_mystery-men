@@ -57,16 +57,15 @@ namespace FaceRecognitionServer.Controllers
         [HttpPost]
         public async Task<ActionResult<string>> CreatePerson([FromForm] MyPerson person)
         {
-            PersonGroup.CreatePersonFromForm(person);
-            return "Person uploaded";
+            return PersonGroup.CreatePersonFromForm(person);
         }
 
         // Post: api/FaceRecognition
         [HttpPost]
         //public async Task<ActionResult<Boolean>> Initialize(FaceImage faceImage)
-        public async void Initialize()
+        public async Task<string> Initialize()
         {
-            PersonGroup.Initialize(_context);
+            return await PersonGroup.Initialize(_context);
         }
     }
 }
