@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.CognitiveServices.Vision.Face;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using System.IO;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FaceRecognitionServer.Models
 {
@@ -17,44 +18,87 @@ namespace FaceRecognitionServer.Models
         private static readonly string RECOGNITION_MODEL1 = RecognitionModel.Recognition01;
         private static readonly string _personGroupId = "myroomates";
         private static readonly IFaceClient _client = Authenticate(ENDPOINT, SUBSCRIPTION_KEY);
-
+        private static double _confidenceCoefficient = 0.5;
         //public async static void Initialize(IServiceProvider serviceProvider)
-        public async static void Initialize(DbContext context)
+        public async static Task<string> Initialize(DbContext context)
         {
-
-            // Once you create it it stays there, check if exists before creating
-            //await client.PersonGroup.GetAsync(personGroupId);
-
-            await _client.PersonGroup.DeleteAsync(_personGroupId);
-            await _client.PersonGroup.CreateAsync(_personGroupId, "My Roomates");
-
-            // Define Bill Gates
-            var person1 = await _client.PersonGroupPerson.CreateAsync(_personGroupId, "Bill");
-
-            // Get images from DB (as DB not working at the moment I hardcode the path)
-            List<FaceImage> faceImages = new List<FaceImage>();
-            faceImages.Add(new FaceImage { Id = 1, Name = "image1", Path = $"{Environment.CurrentDirectory}\\..\\Images\\image1.jpg" });
-            faceImages.Add(new FaceImage { Id = 2, Name = "image3", Path = $"{Environment.CurrentDirectory}\\..\\Images\\image3.jpg" });
-
-            // Add images to the people in the person group
-            foreach (string imagePath in (from faceImage in faceImages
-                                          select faceImage.Path))
+            try
             {
-                using (Stream s = File.OpenRead(imagePath))
+
+                await _client.PersonGroup.DeleteAsync(_personGroupId);
+                await _client.PersonGroup.CreateAsync(_personGroupId, "My Roomates");
+
+                // Define Bill Gates
+                MyPerson person = new MyPerson();
+                person.Name = "Bill";
+                var file1 = File.OpenRead($"{Environment.CurrentDirectory}\\..\\Images\\image1.jpg");
+                person.Images.Add(file1);
+                person.Images.Add(File.OpenRead($"{Environment.CurrentDirectory}\\..\\Images\\image3.jpg"));
+
+                await AddPersonToPersonGroup(person);
+
+                return "Service initialized successfully";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return "Initialization error";
+            }
+
+        }
+
+        public async static Task<bool> AddPersonToPersonGroup(MyPerson myPerson)
+        {
+            try
+            {
+
+                var person = await _client.PersonGroupPerson.CreateAsync(_personGroupId, myPerson.Name);
+
+                foreach (var image in myPerson.Images)
                 {
-                    await _client.PersonGroupPerson.AddFaceFromStreamAsync(_personGroupId, person1.PersonId, s);
+                    await _client.PersonGroupPerson.AddFaceFromStreamAsync(_personGroupId, person.PersonId, image);
                 }
+
+                await _client.PersonGroup.TrainAsync(_personGroupId);
+                while (true)
+                {
+                    await Task.Delay(1000);
+                    var trainingStatus = await _client.PersonGroup.GetTrainingStatusAsync(_personGroupId);
+                    Console.WriteLine($"Training status: {trainingStatus.Status}.");
+                    if (trainingStatus.Status == TrainingStatusType.Succeeded) { break; }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
+
+
+        internal static string CreatePersonFromForm(MyPerson person)
+        {
+            try
+            {
+                person.ReadFormFiles();
+                foreach (var image in person.Images)
+                {
+                    if (IsFaceMatch(image).Result)
+                    {
+                        return "This person already exists";
+                    }
+                }
+
+                if (AddPersonToPersonGroup(person).Result) return "Person added";
+                return "Error, person was not created";
+            }
+            catch (Exception ex)
+            {
+                Console.Write(ex.Message);
+                return "Error, person was not created";
             }
 
-            // Train person group
-            await _client.PersonGroup.TrainAsync(_personGroupId);
-            while (true)
-            {
-                await Task.Delay(1000);
-                var trainingStatus = await _client.PersonGroup.GetTrainingStatusAsync(_personGroupId);
-                Console.WriteLine($"Training status: {trainingStatus.Status}.");
-                if (trainingStatus.Status == TrainingStatusType.Succeeded) { break; }
-            }
         }
 
         public static async Task<bool> IsFaceMatch(Stream imageStream)
@@ -81,7 +125,7 @@ namespace FaceRecognitionServer.Models
                 }
                 else Console.WriteLine("No match was found");
 
-                return result.Candidates.Any(c => c.Confidence > 0.5);
+                return result.Candidates.Any(c => c.Confidence > _confidenceCoefficient);
             }
             catch (Exception ex)
             {
@@ -90,6 +134,20 @@ namespace FaceRecognitionServer.Models
             }
         }
 
+        public static async Task<IList<string>> ListPeople()
+        {
+            try
+            {
+                IList<Person> people = await _client.PersonGroupPerson.ListAsync(_personGroupId);
+                IList<string> names = (from person in people select person.Name).ToList();
+                return names;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
 
 
         private static IFaceClient Authenticate(string endpoint, string key)
