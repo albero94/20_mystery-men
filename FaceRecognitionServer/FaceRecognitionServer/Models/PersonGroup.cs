@@ -8,6 +8,8 @@ using Microsoft.Azure.CognitiveServices.Vision.Face;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using System.IO;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace FaceRecognitionServer.Models
 {
@@ -30,8 +32,8 @@ namespace FaceRecognitionServer.Models
 
                 // Define Bill Gates
                 MyPerson person = new MyPerson("Bill", false);
-                person.Images.Add(File.OpenRead($"{Environment.CurrentDirectory}\\..\\Images\\image1.jpg"));
-                person.Images.Add(File.OpenRead($"{Environment.CurrentDirectory}\\..\\Images\\image3.jpg"));
+                person.Images.Add(File.OpenRead($"{Environment.CurrentDirectory}\\Images\\image1.jpg"));
+                person.Images.Add(File.OpenRead($"{Environment.CurrentDirectory}\\Images\\image3.jpg"));
 
                 await AddPersonToPersonGroup(person);
 
@@ -39,7 +41,7 @@ namespace FaceRecognitionServer.Models
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.Error.WriteLine(ex.Message);
                 return "Initialization error";
             }
 
@@ -71,7 +73,7 @@ namespace FaceRecognitionServer.Models
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.Error.WriteLine(ex.Message);
                 return false;
             }
         }
@@ -129,7 +131,7 @@ namespace FaceRecognitionServer.Models
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.Error.WriteLine(ex.Message);
                 return false;
             }
         }
@@ -144,6 +146,7 @@ namespace FaceRecognitionServer.Models
             }
             catch (Exception ex)
             {
+                Console.Error.WriteLine(ex.Message);
                 throw ex;
             }
 

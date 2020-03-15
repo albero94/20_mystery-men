@@ -28,7 +28,7 @@ namespace FaceRecognitionServer.Controllers
         public async Task<ActionResult<Boolean>> Sample(string imageName = "")
         {
             if (imageName == "") return false;
-            FileStream image = System.IO.File.OpenRead($"{Environment.CurrentDirectory}/../Images/{imageName}.jpg");
+            FileStream image = System.IO.File.OpenRead($"{Environment.CurrentDirectory}/Images/{imageName}.jpg");
             return await PersonGroup.IsFaceMatch(image);
         }
 
