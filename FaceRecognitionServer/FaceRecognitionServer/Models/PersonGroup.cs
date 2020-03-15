@@ -22,7 +22,7 @@ namespace FaceRecognitionServer.Models
         private static readonly IFaceClient _client = Authenticate(ENDPOINT, SUBSCRIPTION_KEY);
         private static double _confidenceCoefficient = 0.5;
         //public async static void Initialize(IServiceProvider serviceProvider)
-        public async static Task<string> Initialize(DbContext context)
+        public async static Task<bool> Initialize()
         {
             try
             {
@@ -37,12 +37,12 @@ namespace FaceRecognitionServer.Models
 
                 await AddPersonToPersonGroup(person);
 
-                return "Service initialized successfully";
+                return true;
             }
             catch (Exception ex)
             {
                 Console.Error.WriteLine(ex.Message);
-                return "Initialization error";
+                return false;
             }
 
         }

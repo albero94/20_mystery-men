@@ -10,26 +10,25 @@ using System.IO;
 
 namespace FaceRecognitionServer.Controllers
 {
-    [Route("api/{controller}/{action}")]
+    [Route("/{controller}/{action=ListPeople}")]
     [ApiController]
     public class FaceRecognitionController : ControllerBase
     {
-        private readonly FaceImageContext _context;
-        private readonly string SUBSCRIPTION_KEY = Environment.GetEnvironmentVariable("AZURE_FACE_SUBSCRIPTION_KEY");
-        private readonly string ENDPOINT = Environment.GetEnvironmentVariable("AZURE_FACE_ENDPOINT");
-
-        public FaceRecognitionController(FaceImageContext context)
-        {
-            _context = context;
-        }
-
         // GET: api/FaceRecognition/Sample
         [HttpGet]
         public async Task<ActionResult<Boolean>> Sample(string imageName = "")
         {
-            if (imageName == "") return false;
-            FileStream image = System.IO.File.OpenRead($"{Environment.CurrentDirectory}/Images/{imageName}.jpg");
-            return await PersonGroup.IsFaceMatch(image);
+            try
+            {
+                if (imageName == "") return false;
+                FileStream image = System.IO.File.OpenRead($"{Environment.CurrentDirectory}/Images/{imageName}.jpg");
+                return await PersonGroup.IsFaceMatch(image);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                throw ex;
+            }
         }
 
         [HttpPost]
@@ -38,12 +37,12 @@ namespace FaceRecognitionServer.Controllers
             try
             {
                 Stream image = file.OpenReadStream();
-                if (true) return await PersonGroup.IsFaceMatch(image);
+                return await PersonGroup.IsFaceMatch(image);
             }
             catch (Exception ex)
             {
-
-                return false;
+                Console.Error.WriteLine(ex.Message);
+                throw ex;
             }
 
         }
@@ -63,9 +62,9 @@ namespace FaceRecognitionServer.Controllers
         // Post: api/FaceRecognition
         [HttpPost]
         //public async Task<ActionResult<Boolean>> Initialize(FaceImage faceImage)
-        public async Task<string> Initialize()
+        public async Task<bool> Initialize()
         {
-            return await PersonGroup.Initialize(_context);
+            return await PersonGroup.Initialize();
         }
     }
 }
