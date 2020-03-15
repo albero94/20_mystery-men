@@ -10,7 +10,7 @@ using System.IO;
 
 namespace FaceRecognitionServer.Controllers
 {
-    [Route("/{controller}/{action=ListPeople}")]
+    [Route("/{controller}/{action=Index}")]
     [ApiController]
     public class FaceRecognitionController : ControllerBase
     {
@@ -45,6 +45,12 @@ namespace FaceRecognitionServer.Controllers
                 throw ex;
             }
 
+        }
+
+        [HttpGet]
+        public async Task<string> Index()
+        {
+            return "You are in the face recognition controller";
         }
 
         [HttpGet]
