@@ -16,19 +16,25 @@ namespace FaceRecognitionServer.Models
 {
     public class PersonGroupRepository
     {
-        private static readonly string SUBSCRIPTION_KEY = Environment.GetEnvironmentVariable("AZURE_FACE_SUBSCRIPTION_KEY");
-        private static readonly string ENDPOINT = Environment.GetEnvironmentVariable("AZURE_FACE_ENDPOINT");
-        private static readonly string RECOGNITION_MODEL1 = RecognitionModel.Recognition01;
-        private static readonly string _personGroupId = "myroomates";
-        private static readonly IFaceClient _client = Authenticate(ENDPOINT, SUBSCRIPTION_KEY);
-        private static readonly double _confidenceCoefficient = 0.5;
+        private readonly string SUBSCRIPTION_KEY;
+        private readonly string ENDPOINT;
+        private readonly string RECOGNITION_MODEL1;
+        private readonly string _personGroupId;
+        private readonly IFaceClient _client;
+        private readonly double _confidenceCoefficient;
 
-        private static readonly ILogger _logger;
+        private readonly ILogger _logger;
         public PersonGroupRepository(ILogger<PersonGroupRepository> logger)
         {
             _logger = logger;
+            SUBSCRIPTION_KEY = Environment.GetEnvironmentVariable("AZURE_FACE_SUBSCRIPTION_KEY");
+            ENDPOINT = Environment.GetEnvironmentVariable("AZURE_FACE_ENDPOINT");
+            RECOGNITION_MODEL1 = RecognitionModel.Recognition01;
+            _personGroupId = "myroomates";
+            _client = Authenticate(ENDPOINT, SUBSCRIPTION_KEY);
+            _confidenceCoefficient = 0.5;
         }
-        public async static Task<bool> Initialize()
+        public async Task<bool> Initialize()
         {
             try
             {
@@ -38,8 +44,9 @@ namespace FaceRecognitionServer.Models
 
                 // Define Bill Gates
                 MyPerson person = new MyPerson("Bill", false);
-                person.Images.Add(File.OpenRead($"{Environment.CurrentDirectory}\\Images\\image1.jpg"));
-                person.Images.Add(File.OpenRead($"{Environment.CurrentDirectory}\\Images\\image3.jpg"));
+;
+                person.Images.Add(File.OpenRead("./wwwroot/Images/image1.jpg"));
+                person.Images.Add(File.OpenRead("./wwwroot/Images/image3.jpg"));
 
                 await AddPersonToPersonGroup(person);
                 _logger.LogInformation("Repository initialized.");
@@ -48,13 +55,13 @@ namespace FaceRecognitionServer.Models
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
                 return false;
             }
 
         }
 
-        public async static Task<bool> AddPersonToPersonGroup(MyPerson myPerson)
+        public async Task<bool> AddPersonToPersonGroup(MyPerson myPerson)
         {
             try
             {
@@ -68,25 +75,32 @@ namespace FaceRecognitionServer.Models
                 }
 
                 await _client.PersonGroup.TrainAsync(_personGroupId);
-                
+
                 while (true)
                 {
                     await Task.Delay(1000);
                     var trainingStatus = await _client.PersonGroup.GetTrainingStatusAsync(_personGroupId);
-                    Console.WriteLine($"Training status: {trainingStatus.Status}.");
+                    _logger.LogTrace($"Training status: {trainingStatus.Status}.");
                     if (trainingStatus.Status == TrainingStatusType.Succeeded) { break; }
+
+                    if (trainingStatus.Status == TrainingStatusType.Failed)
+                    {
+                        throw new Exception(message: "Training failed");
+                    }
                 }
+
+                _logger.LogInformation("Person added successfully.");
                 return true;
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
                 return false;
             }
         }
 
 
-        internal static string CreatePersonFromForm(MyPerson person)
+        internal string CreatePersonFromForm(MyPerson person)
         {
             try
             {
@@ -99,18 +113,22 @@ namespace FaceRecognitionServer.Models
                     }
                 }
 
-                if (AddPersonToPersonGroup(person).Result) return "Person added";
-                return "Error, person was not created";
+                if (AddPersonToPersonGroup(person).Result)
+                {
+                    return "Person added";
+                }
+
+                return "Person was not created";
             }
             catch (Exception ex)
             {
-                Console.Write(ex.Message);
+                _logger.LogError(ex.Message);
                 return "Error, person was not created";
             }
 
         }
 
-        public static async Task<bool> IsFaceMatch(Stream imageStream)
+        public async Task<bool> IsFaceMatch(Stream imageStream)
         {
             List<Guid> sourceFaceIds = new List<Guid>();
             try
@@ -121,46 +139,56 @@ namespace FaceRecognitionServer.Models
 
                 var result = (await _client.Face.IdentifyAsync(sourceFaceIds, _personGroupId))[0];
 
-                string message;
                 if (result.Candidates.Count > 0)
                 {
                     foreach (var candidate in result.Candidates)
                     {
                         Person person = await _client.PersonGroupPerson.GetAsync(_personGroupId, candidate.PersonId);
 
-                        Console.WriteLine($"Person {person.Name} is identified for face in image with Face ID {result.FaceId} " +
+                        _logger.LogInformation($"Person {person.Name} is identified for face in image with Face ID {result.FaceId} " +
                             $"and confidence {result.Candidates[0].Confidence}.");
                     }
                 }
-                else Console.WriteLine("No match was found");
+                else _logger.LogInformation("Face match found");
 
-                return result.Candidates.Any(c => c.Confidence > _confidenceCoefficient);
+                if (result.Candidates.Any(c => c.Confidence > _confidenceCoefficient))
+                {
+                    _logger.LogInformation("Face match found");
+                    return true;
+                }
+                else
+                {
+                    _logger.LogInformation("Face match not found");
+                    return false;
+                }
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
                 return false;
             }
         }
 
-        public static async Task<IList<string>> ListPeople()
+        public async Task<IList<string>> ListPeople()
         {
             try
             {
                 IList<Person> people = await _client.PersonGroupPerson.ListAsync(_personGroupId);
                 IList<string> names = (from person in people select person.Name).ToList();
+
+                _logger.LogInformation("Listing people");
                 return names;
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(ex.Message);
-                throw ex;
+                _logger.LogError(ex.Message);
+                return new List<string>();
             }
 
         }
 
 
-        private static IFaceClient Authenticate(string endpoint, string key)
+        private IFaceClient Authenticate(string endpoint, string key)
         {
             return new FaceClient(new ApiKeyServiceClientCredentials(key)) { Endpoint = endpoint };
         }

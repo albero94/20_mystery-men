@@ -18,5 +18,12 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\Images\image1.jpg" />
+    <None Include="wwwroot\Images\image2.jpg" />
+    <None Include="wwwroot\Images\image3.jpg" />
+    <None Include="wwwroot\Images\image4.jpg" />
+  </ItemGroup>
+
 
 </Project>
