@@ -28,6 +28,12 @@ namespace FaceRecognitionServer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddLogging(loggingBuilder =>
+            {
+                loggingBuilder.AddConsole();
+                loggingBuilder.AddDebug();
+                loggingBuilder.AddAzureWebAppDiagnostics();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

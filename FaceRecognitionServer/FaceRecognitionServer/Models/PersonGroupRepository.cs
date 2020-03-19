@@ -10,18 +10,24 @@ using System.IO;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Logging;
 
 namespace FaceRecognitionServer.Models
 {
-    public class PersonGroup
+    public class PersonGroupRepository
     {
         private static readonly string SUBSCRIPTION_KEY = Environment.GetEnvironmentVariable("AZURE_FACE_SUBSCRIPTION_KEY");
         private static readonly string ENDPOINT = Environment.GetEnvironmentVariable("AZURE_FACE_ENDPOINT");
         private static readonly string RECOGNITION_MODEL1 = RecognitionModel.Recognition01;
         private static readonly string _personGroupId = "myroomates";
         private static readonly IFaceClient _client = Authenticate(ENDPOINT, SUBSCRIPTION_KEY);
-        private static double _confidenceCoefficient = 0.5;
-        //public async static void Initialize(IServiceProvider serviceProvider)
+        private static readonly double _confidenceCoefficient = 0.5;
+
+        private static readonly ILogger _logger;
+        public PersonGroupRepository(ILogger<PersonGroupRepository> logger)
+        {
+            _logger = logger;
+        }
         public async static Task<bool> Initialize()
         {
             try
@@ -36,6 +42,7 @@ namespace FaceRecognitionServer.Models
                 person.Images.Add(File.OpenRead($"{Environment.CurrentDirectory}\\Images\\image3.jpg"));
 
                 await AddPersonToPersonGroup(person);
+                _logger.LogInformation("Repository initialized.");
 
                 return true;
             }
