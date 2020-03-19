@@ -100,7 +100,7 @@ namespace FaceRecognitionServer.Models
         }
 
 
-        internal string CreatePersonFromForm(MyPerson person)
+        internal async Task<string> CreatePersonFromForm(MyPerson person)
         {
             try
             {
@@ -187,7 +187,22 @@ namespace FaceRecognitionServer.Models
 
         }
 
+        public async Task<bool> DeletePerson(string name)
+        {
+            try
+            {
+                var people = await _client.PersonGroupPerson.ListAsync(_personGroupId);
+                var person = people.Where(p => p.Name == name).FirstOrDefault();
+                await _client.PersonGroupPerson.DeleteAsync(_personGroupId, person.PersonId);
 
+                _logger.LogInformation($"{person.Name} deleted successfully.");
+                return true;
+            }catch(Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return false;
+            }
+        }
         private IFaceClient Authenticate(string endpoint, string key)
         {
             return new FaceClient(new ApiKeyServiceClientCredentials(key)) { Endpoint = endpoint };

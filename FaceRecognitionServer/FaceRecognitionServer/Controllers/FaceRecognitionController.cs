@@ -75,10 +75,17 @@ namespace FaceRecognitionServer.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<string>> CreatePerson([FromForm] MyPerson person)
+        public async Task<string> CreatePerson([FromForm] MyPerson person)
         {
             _logger.LogTrace("Action: CreatePerson");
-            return _personGroupRepository.CreatePersonFromForm(person);
+            return await _personGroupRepository.CreatePersonFromForm(person);
+        }
+
+        [HttpDelete]
+        public async Task<bool> DeletePerson(string name)
+        {
+            _logger.LogTrace("Action: DeletePerson");
+            return await _personGroupRepository.DeletePerson(name);
         }
 
         // Post: api/FaceRecognition
