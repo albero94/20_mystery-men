@@ -27,8 +27,9 @@ while True:
         sleep(2)
         #camera.capture("/home/pi/image1.jpg")
         img_fd = open('/home/pi/image.jpg','rb')
-        files = {'image': img_fd}
+        files = {'file': img_fd}
         post_response = requests.post(url='https://gw-iot-facerecognitionserver.azurewebsites.net/facerecognition/FaceMatch', files=files)
+        close(img_fd)
         print("posted")
         print(post_response.text)
         if(post_response.text == "true"):
