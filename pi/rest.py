@@ -5,12 +5,12 @@ app = Flask(__name__)
 api = Api(app)
 
 class Unlock(Resource):
-    def post(self):
+    def get(self):
         print("unlock")
         return "unlock"
 
 class CheckDoor(Resource):
-    def post(self):
+    def get(self):
         print("checkDoor")
         return "photo"
         
