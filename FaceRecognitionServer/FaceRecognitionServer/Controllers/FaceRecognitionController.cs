@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using FaceRecognitionServer.Authorization;
 
 namespace FaceRecognitionServer.Controllers
 {
@@ -68,6 +69,7 @@ namespace FaceRecognitionServer.Controllers
         }
 
         [HttpGet]
+        [ApiKeyAuth]
         public async Task<IList<string>> ListPeople()
         {
             _logger.LogTrace("Action: ListPeople");
