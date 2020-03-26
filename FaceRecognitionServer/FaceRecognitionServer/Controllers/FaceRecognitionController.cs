@@ -15,6 +15,7 @@ namespace FaceRecognitionServer.Controllers
 {
     [Route("/{controller}/{action=Index}")]
     [ApiController]
+    [ApiKeyAuth]
     public class FaceRecognitionController : ControllerBase
     {
         private readonly ILogger _logger;
@@ -33,7 +34,7 @@ namespace FaceRecognitionServer.Controllers
             try
             {
                 if (imageName == "") return false;
-                
+
                 FileStream image = System.IO.File.OpenRead($"./wwwroot/Images/{imageName}.jpg");
 
                 return await _personGroupRepository.IsFaceMatch(image);
@@ -69,7 +70,6 @@ namespace FaceRecognitionServer.Controllers
         }
 
         [HttpGet]
-        [ApiKeyAuth]
         public async Task<IList<string>> ListPeople()
         {
             _logger.LogTrace("Action: ListPeople");
