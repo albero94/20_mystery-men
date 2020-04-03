@@ -34,7 +34,7 @@ namespace FaceRecognitionServer
                 loggingBuilder.AddDebug();
                 loggingBuilder.AddAzureWebAppDiagnostics();
             });
-            services.AddSingleton<PersonGroupRepository>();
+            services.AddSingleton<AzurePersonGroupRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

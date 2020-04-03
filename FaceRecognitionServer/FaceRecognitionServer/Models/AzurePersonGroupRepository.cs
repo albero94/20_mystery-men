@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FaceRecognitionServer.Models
 {
-    public class PersonGroupRepository
+    public class AzurePersonGroupRepository
     {
         private readonly string SUBSCRIPTION_KEY;
         private readonly string ENDPOINT;
@@ -24,7 +24,7 @@ namespace FaceRecognitionServer.Models
         private readonly double _confidenceCoefficient;
 
         private readonly ILogger _logger;
-        public PersonGroupRepository(ILogger<PersonGroupRepository> logger)
+        public AzurePersonGroupRepository(ILogger<AzurePersonGroupRepository> logger)
         {
             _logger = logger;
             SUBSCRIPTION_KEY = Environment.GetEnvironmentVariable("AZURE_FACE_SUBSCRIPTION_KEY");

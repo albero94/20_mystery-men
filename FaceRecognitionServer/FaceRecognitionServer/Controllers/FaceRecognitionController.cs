@@ -19,8 +19,8 @@ namespace FaceRecognitionServer.Controllers
     public class FaceRecognitionController : ControllerBase
     {
         private readonly ILogger _logger;
-        private readonly PersonGroupRepository _personGroupRepository;
-        public FaceRecognitionController(ILogger<FaceRecognitionController> logger, PersonGroupRepository personGroupRepository)
+        private readonly AzurePersonGroupRepository _personGroupRepository;
+        public FaceRecognitionController(ILogger<FaceRecognitionController> logger, AzurePersonGroupRepository personGroupRepository)
         {
             _logger = logger;
             _personGroupRepository = personGroupRepository;
