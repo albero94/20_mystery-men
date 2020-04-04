@@ -19,11 +19,16 @@ namespace FaceRecognitionServer.Controllers
     public class FaceRecognitionController : ControllerBase
     {
         private readonly ILogger _logger;
-        private readonly AzurePersonGroupRepository _personGroupRepository;
-        public FaceRecognitionController(ILogger<FaceRecognitionController> logger, AzurePersonGroupRepository personGroupRepository)
+        private readonly AzurePersonGroupRepository _azurePersonGroupRepository;
+        private readonly PeopleRepository _peopleRepository;
+
+        public FaceRecognitionController(ILogger<FaceRecognitionController> logger, 
+            AzurePersonGroupRepository azurePersonGroupRepository,
+            PeopleRepository peopleRepository)
         {
             _logger = logger;
-            _personGroupRepository = personGroupRepository;
+            _azurePersonGroupRepository = azurePersonGroupRepository;
+            this._peopleRepository = peopleRepository;
         }
 
         // GET: api/FaceRecognition/Sample
@@ -37,7 +42,7 @@ namespace FaceRecognitionServer.Controllers
 
                 FileStream image = System.IO.File.OpenRead($"./wwwroot/Images/{imageName}.jpg");
 
-                return await _personGroupRepository.IsFaceMatch(image);
+                return await _azurePersonGroupRepository.IsFaceMatch(image);
             }
             catch (Exception ex)
             {
@@ -52,7 +57,7 @@ namespace FaceRecognitionServer.Controllers
             try
             {
                 Stream image = file.OpenReadStream();
-                return await _personGroupRepository.IsFaceMatch(image);
+                return await _azurePersonGroupRepository.IsFaceMatch(image);
             }
             catch (Exception ex)
             {
@@ -73,21 +78,25 @@ namespace FaceRecognitionServer.Controllers
         public async Task<IList<string>> ListPeople()
         {
             _logger.LogTrace("Action: ListPeople");
-            return await _personGroupRepository.ListPeople();
+            return await _azurePersonGroupRepository.ListPeople();
         }
 
         [HttpPost]
         public async Task<string> CreatePerson([FromForm] MyPerson person)
         {
             _logger.LogTrace("Action: CreatePerson");
-            return await _personGroupRepository.CreatePersonFromForm(person);
+            if (_azurePersonGroupRepository.CreatePersonFromForm(person).Result == "Person added")
+            {
+                _peopleRepository.AddPerson(person);
+            }
+            return "Person added";
         }
 
         [HttpDelete]
         public async Task<bool> DeletePerson(string name)
         {
             _logger.LogTrace("Action: DeletePerson");
-            return await _personGroupRepository.DeletePerson(name);
+            return await _azurePersonGroupRepository.DeletePerson(name);
         }
 
         // Post: api/FaceRecognition
@@ -96,7 +105,23 @@ namespace FaceRecognitionServer.Controllers
         public async Task<bool> Initialize()
         {
             _logger.LogTrace("Action: Initialize");
-            return await _personGroupRepository.Initialize();
+            try
+            {
+                if (_azurePersonGroupRepository.Initialize().Result
+                    && _peopleRepository.Initialize()) return true;
+                else return false;
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return false;
+            }
+        }
+
+        [HttpGet]
+        public Object ListPeopleWithImages()
+        {
+            return _peopleRepository.ListPeopleWithImages();
         }
     }
 }

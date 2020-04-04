@@ -149,7 +149,7 @@ namespace FaceRecognitionServer.Models
                             $"and confidence {result.Candidates[0].Confidence}.");
                     }
                 }
-                else _logger.LogInformation("Face match found");
+                else _logger.LogInformation("Face match not found");
 
                 if (result.Candidates.Any(c => c.Confidence > _confidenceCoefficient))
                 {

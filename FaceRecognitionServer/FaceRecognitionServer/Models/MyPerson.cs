@@ -10,6 +10,7 @@ namespace FaceRecognitionServer.Models
         public IList<IFormFile> FormFiles { get; set; }
         public IList<Stream> Images { get; set; }
         public bool IsFromForm { get; set; }
+        public IList<string> ImagesPaths { get; set; }
 
         public MyPerson()
         {
