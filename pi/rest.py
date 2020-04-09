@@ -1,8 +1,10 @@
-from flask import Flask, request
+from flask import Flask, request, send_file
 from flask_restful import Resource, Api
+from picamera import PiCamera
 
 app = Flask(__name__)
 api = Api(app)
+camera=PiCamera()
 
 class Unlock(Resource):
     def get(self):
@@ -11,8 +13,10 @@ class Unlock(Resource):
 
 class CheckDoor(Resource):
     def get(self):
-        print("checkDoor")
-        return "photo"
+        #print("checkDoor")
+        camera.capture("/home/pi/image1.jpg")
+        #img_fd = open('/home/pi/image1.jpg','rb')
+        return send_file("/home/pi/image1.jpg", mimetype='image/png')
         
 
 api.add_resource(Unlock, '/unlock') # Route_1
