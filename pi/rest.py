@@ -24,3 +24,4 @@ api.add_resource(CheckDoor, '/checkdoor') # Route_2
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port='5002')
+    print("past run")
