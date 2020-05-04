@@ -1,1 +1,2 @@
 Authorization class: https://medium.com/@zarkopafilis/asp-net-core-2-2-3-resti-api-24-setting-up-apikey-based-authentication-94169a051a5c
+Azure Face API: https://azure.microsoft.com/en-us/services/cognitive-services/face/
