@@ -12,7 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".CheckDoorActivity"></activity>
+        <activity android:name=".ListUserActivity"></activity>
+        <activity android:name=".DeleteUserActivity" />
+        <activity android:name=".AddUserActivity" />
+        <activity android:name=".CheckDoorActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -7,7 +7,6 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.webkit.MimeTypeMap
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -15,7 +14,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import okhttp3.MultipartBody
 import okhttp3.Request
-import java.io.File
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.jetbrains.anko.doAsync
@@ -47,8 +45,6 @@ class AddUserActivity : AppCompatActivity() {
 
         goButton.setOnClickListener{
             val manager = APImanager()
-            val imgFile = File(uri!!.path)
-            val imgExt = MimeTypeMap.getFileExtensionFromUrl(imgFile.absolutePath)
             val requestBody = MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("name", name.text.toString())
@@ -68,6 +64,8 @@ class AddUserActivity : AppCompatActivity() {
                             "Added User",
                             Toast.LENGTH_LONG
                         ).show()
+                        val intent = Intent(this@AddUserActivity, MainActivity::class.java)
+                        startActivity(intent)
                     }
                 }
             }
