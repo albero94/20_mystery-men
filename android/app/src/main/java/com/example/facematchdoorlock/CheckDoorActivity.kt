@@ -21,6 +21,7 @@ class CheckDoorActivity : AppCompatActivity() {
 
 
         val request = Request.Builder()
+            .header("ApiKey", "MySecretKey")
             .url("http://192.168.86.41:5002/checkdoor")
             .build()
         doAsync {
