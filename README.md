@@ -9,11 +9,11 @@ We have created a smart door application that uses face recognition. The basic d
 ## Deployment
 If you want to use our application, you need the following components. A hosting environment to deploy the .NET server, an Azure Face API subscription (basic is free), an android device to administrate the system, a camera, a door lock, and a Raspberry PI to operate both of them.
 
-We have included a Deployment folder where you can find the three projects (Cloud, Web and PI).
+We have included a [Deployment](./Deployment) folder where you can find the three projects (Cloud, Web and PI).
 
 To deploy the cloud application
 * You need to copy the files in FaceRecognitionServer to the hosting provider of your choice, we have used Azure App Services
-* You need to register to Azure Face API to get the API keys, then include them as environment variables named AZURE_FACE_SUBSCRIPTION_KEY and AZURE_FACE_ENDPOINT
+* You need to register to [Azure Face API](https://azure.microsoft.com/en-us/services/cognitive-services/face/) to get the API keys, then include them as environment variables named AZURE_FACE_SUBSCRIPTION_KEY and AZURE_FACE_ENDPOINT
 * Your cloud service is ready to use
 
 To deploy the mobile application
