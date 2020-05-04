@@ -10,25 +10,29 @@ using System.IO;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using FaceRecognitionServer.Authorization;
+using Microsoft.AspNetCore.Hosting;
 
 namespace FaceRecognitionServer.Controllers
 {
     [Route("/{controller}/{action=Index}")]
     [ApiController]
-    [ApiKeyAuth]
+    //[ApiKeyAuth]
     public class FaceRecognitionController : ControllerBase
     {
         private readonly ILogger _logger;
         private readonly AzurePersonGroupRepository _azurePersonGroupRepository;
         private readonly PeopleRepository _peopleRepository;
+        private readonly IWebHostEnvironment hostingEnvironment;
 
-        public FaceRecognitionController(ILogger<FaceRecognitionController> logger, 
+        public FaceRecognitionController(ILogger<FaceRecognitionController> logger,
             AzurePersonGroupRepository azurePersonGroupRepository,
-            PeopleRepository peopleRepository)
+            PeopleRepository peopleRepository,
+            IWebHostEnvironment hostingEnvironment)
         {
             _logger = logger;
             _azurePersonGroupRepository = azurePersonGroupRepository;
             this._peopleRepository = peopleRepository;
+            this.hostingEnvironment = hostingEnvironment;
         }
 
         // GET: api/FaceRecognition/Sample
@@ -85,7 +89,7 @@ namespace FaceRecognitionServer.Controllers
         public async Task<string> CreatePerson([FromForm] MyPerson person)
         {
             _logger.LogTrace("Action: CreatePerson");
-            if (_azurePersonGroupRepository.CreatePersonFromForm(person).Result == "Person added")
+            if (await _azurePersonGroupRepository.CreatePersonFromForm(person) == "Person added")
             {
                 _peopleRepository.AddPerson(person);
             }
@@ -96,7 +100,15 @@ namespace FaceRecognitionServer.Controllers
         public async Task<bool> DeletePerson(string name)
         {
             _logger.LogTrace("Action: DeletePerson");
-            return await _azurePersonGroupRepository.DeletePerson(name);
+            if (await _azurePersonGroupRepository.DeletePerson(name) == true)
+            {
+                if (_peopleRepository.DeletePerson(name))
+                {
+                    _logger.LogTrace("Person deleted");
+                    return true;
+                }
+            }
+            return false;
         }
 
         // Post: api/FaceRecognition
@@ -111,7 +123,7 @@ namespace FaceRecognitionServer.Controllers
                     && _peopleRepository.Initialize()) return true;
                 else return false;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
                 return false;
@@ -122,6 +134,20 @@ namespace FaceRecognitionServer.Controllers
         public Object ListPeopleWithImages()
         {
             return _peopleRepository.ListPeopleWithImages();
+        }
+        [HttpGet]
+        public IActionResult GetSampleImage()
+        {
+            try
+            {
+                return base.PhysicalFile(Path.Combine(hostingEnvironment.WebRootPath, "images", "dice.png"),
+                    "image/jpg");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return null;
+            }
         }
     }
 }

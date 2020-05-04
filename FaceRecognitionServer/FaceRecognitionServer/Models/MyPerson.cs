@@ -17,6 +17,7 @@ namespace FaceRecognitionServer.Models
             this.Name = "";
             this.FormFiles = new List<IFormFile>();
             this.Images = new List<Stream>();
+            this.ImagesPaths = new List<string>();
             IsFromForm = true;
         }
         public MyPerson(string name, bool isFromForm)
@@ -25,6 +26,7 @@ namespace FaceRecognitionServer.Models
             this.IsFromForm = IsFromForm;
             this.FormFiles = new List<IFormFile>();
             this.Images = new List<Stream>();
+            this.ImagesPaths = new List<string>();
         }
 
         public void ReadFormFiles()

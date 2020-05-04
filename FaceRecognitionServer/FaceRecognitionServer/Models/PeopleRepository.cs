@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
 using SQLitePCL;
@@ -8,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 
 namespace FaceRecognitionServer.Models
@@ -71,10 +73,21 @@ namespace FaceRecognitionServer.Models
             return true;
         }
 
+        public bool DeletePerson(string name)
+        {
+            MyPerson person = _peopleList.Where(p => p.Name == name).FirstOrDefault();
+            if (DeleteImages(person))
+            {
+                _peopleList.Remove(person);
+                return true;
+            }
+            return false;
+        }
+
         public List<Object> ListPeopleWithImages()
         {
             List<Object> list = new List<Object>();
-            foreach(MyPerson person in _peopleList)
+            foreach (MyPerson person in _peopleList)
             {
                 byte[] file = File.ReadAllBytes(Path.Combine(hostingEnvironment.WebRootPath, "people",
                     person.ImagesPaths.FirstOrDefault()));
@@ -105,6 +118,24 @@ namespace FaceRecognitionServer.Models
             }
 
             return fileNames;
+        }
+
+        private bool DeleteImages(MyPerson person)
+        {
+            foreach (var imagePath in person.ImagesPaths)
+            {
+                try
+                {
+                    File.Delete(Path.Combine(hostingEnvironment.WebRootPath, "People", imagePath));
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
