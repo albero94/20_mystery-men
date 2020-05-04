@@ -23,7 +23,13 @@ Our mobile component is a flutter application and it behaves as the administrato
 
 ## What has changed and what was not accomplished
 Our team has been able to kept working in the same project without changes after COVID-19. In our checkpoint one, after a conversation with Gabe, we decided that including a mobile application to increase the operability of the system would be a great idea, that was the major change and we have been able to stick to the plan. 
-We believe that the only point that has been affected is the demo presentation. It would have been nice to be in class and quickly place the camera and the door actuator and show case how when one of us arrives to the door the first time it does not open, and how after including that person as a registered user from our phone application and approaching the door again, the lock would open.
+
+We believe that the main point that has been affected is the demo presentation. It would have been nice to be in class and quickly place the camera and the door actuator and show case how when one of us arrives to the door the first time it does not open, and how after including that person as a registered user from our phone application and approaching the door again, the lock would open.
+
+Other taks that could have been done are:
+* Increase the robustness of the system, handling all kind of edge cases and situations that can cause exceptions or other errors
+* Test/Improve the security of the face API, we believe that as we are just using a normal average camera, it is possible to trick the system by using a picture of the person registered
+* Other ideas?
 
 ## Tasks Division
 From day one we created a project in GitHub to keep track of our issues, you can have access to it in this same repo. We had some initial meetings to decide the main direction of the project, we created issues for the different functionalities we wanted and we included bullet points inside some of them to explain the detail. After that, we assigned the tasks to the different team members and we have been working on them, mainly asynchronously, although whenever it was necessary we have had video calls to clarify some points. Our main communication tool has been Slack, we have been posting updates on a weekly basis about the progress made, where we had problems, and where we needed some help/collaboration.
