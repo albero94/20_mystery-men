@@ -16,9 +16,8 @@ lock = threading.Lock()
 class Unlock(Resource):
     def get(self):
         if(verify()):
-            print("unlock")
-            return "unlock"
-        return jsonify({"message":"UNAUTHORIZED"}), 401
+            unlocked()
+        return jsonify({"message":"UNAUTHORIZED"})
 
 class CheckDoor(Resource):
     def get(self):
@@ -27,7 +26,7 @@ class CheckDoor(Resource):
             camera.capture("/home/pi/image1.jpg")
             lock.release()
             return send_file("/home/pi/image1.jpg", mimetype='image/png')
-        return jsonify({"message":"UNAUTHORIZED"}), 401
+        return jsonify({"message":"UNAUTHORIZED"})
 
 def verify():
     headers = request.headers
@@ -37,8 +36,12 @@ def verify():
     else: return False
 
 GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
 GPIO.setup(12, GPIO.IN)
 GPIO.setup(19, GPIO.OUT)
+GPIO.setup(6, GPIO.OUT)
+GPIO.output(19, GPIO.LOW)
+GPIO.output(6, GPIO.LOW)
 prev_input=0
 
 def actuate():
@@ -48,7 +51,9 @@ def actuate():
     unlocked()
     
 def unlocked():
-    sleep(30)
+    GPIO.output(19, GPIO.HIGH)
+    sleep(2)
+    GPIO.output(19, GPIO.LOW)
     #then relock
     
 def rest():
@@ -62,7 +67,6 @@ t1.start()
 while True:
     input = GPIO.input(12)
     if((not prev_input) and input):
-        GPIO.output(19, GPIO.HIGH)
         #button pressed; take photo and seek confirmation
         lock.acquire()
         sleep(2)
@@ -75,8 +79,9 @@ while True:
         print(post_response.text)
         if(post_response.text == "true"):
             actuate()
-        #auth=HTTPBasicAuth('ApiKey','MySecretKey')
-        #get_response = requests.get(url='https://gw-iot-facerecognitionserver.azurewebsites.net/facerecognition/ListPeople', headers={'ApiKey':'MySecretKey'})
-        #print(get_response.text)
+        else:
+            GPIO.output(6, GPIO.HIGH)
+            sleep(2)
+            GPIO.output(6, GPIO.LOW)
     prev_input=input
     sleep(.05)
