@@ -26,5 +26,5 @@ To deploy the mobile application
 * Download the [APK](./deployment/android/FaceMatch-Door-Lock.apk) and install on an Android Device, or build the [project](./android) in Android Studio and run in an emulator.
 
 To deploy the IoT component
-* Download [actuator.py](./deployment/pi/actuator.py) and run on a Raspberry Pi.
+* Download [controller.py](./deployment/pi/controller.py) and run on a Raspberry Pi.
 * A wiring example can be found [here](./deployment/pi/wiring.JPG)
