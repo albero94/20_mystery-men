@@ -6,6 +6,11 @@ Alvaro Albero (github: albero94)
 ## Description
 We have created a smart door application that uses face recognition. The basic description of the service is, we have a cloud application that contains the list and images of people that are allowed into the house. We have a mobile application that is used as an administrator and can add and delete people from the list and operate the door lock directly. We have an IoT system with a Raspberry PI, a camera and a lock actuator that will take a picture of the person trying to get into the house, send it to the cloud service, and operate the door if there is a match in the face.
 
+* [Face Recognition Server](./FaceRecognitionServer) contains the cloud service
+* [Android](./android) contains the mobile application
+* [PI](./pi) contains the Raspberry PI code to manage the actuators
+* [Deployment](./deployment) contans the files to deploy the project
+
 ## Deployment
 If you want to use our application, you need the following components. A hosting environment to deploy the .NET server, an Azure Face API subscription (basic is free), an android device to administrate the system, a camera, a door lock, and a Raspberry PI to operate both of them.
 
