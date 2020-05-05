@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
                 runOnUiThread {
                     Toast.makeText(
                         this@MainActivity,
-                        response.toString(),
+                        "Unlocked.",
                         Toast.LENGTH_LONG
                     ).show()
                 }
