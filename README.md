@@ -10,6 +10,7 @@ We have created a smart door application that uses face recognition. The basic d
 * [Android](./android) contains the mobile application
 * [PI](./pi) contains the Raspberry PI code to manage the actuators
 * [Deployment](./deployment) contans the files to deploy the project
+* A short demo video can be found [here](https://drive.google.com/open?id=1d16epz6AwzkoG-WXnCZSgXjU2IlyBvqN).
 
 ## Deployment
 If you want to use our application, you need the following components. A hosting environment to deploy the .NET server, an Azure Face API subscription (basic is free), an android device to administrate the system, a camera, a door lock, and a Raspberry PI to operate both of them.
@@ -22,7 +23,8 @@ To deploy the cloud application
 * Your cloud service is ready to use
 
 To deploy the mobile application
-* TODO: MOBILE APP STEPS
+* Download [APK](./Development/android/FaceMatch-Door-Lock.apk) and install on an Android Device, or build the [project](./android) in Android Studio and run in an emulator.
 
 To deploy the IoT component
-* TODO: IOT STEPS
+* Download [actuator.py](./Deployment/pi/actuator.py) and run on a Raspberry Pi.
+* A wiring example can be found [here](./Deployment/pi/wiring.JPG)
